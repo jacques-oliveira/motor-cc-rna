@@ -8,7 +8,27 @@ Created on Sat Nov 16 10:28:50 2024
 import pandas as pd
 bancoDB = pd.read_csv('./BD_Jean_98000.csv')
 print(bancoDB.head())
-
+#%%
+print(bancoDB.describe())
+#%%
+tensaoMedia = bancoDB['V'].mean()
+print(tensaoMedia)
+#%%
+import matplotlib.pyplot as plt
+import seaborn as sns 
+sns.scatterplot(x='T',y='V',data = bancoDB,color='blue',marker='o')
+plt.xlabel('Torque', fontsize=14)
+plt.ylabel('Tensão', fontsize=14)
+plt.title('Gráfico Torque x Tensão', fontsize=14)
+plt.show()
+#%%
+tensoesAcimaDaMedia = (bancoDB['V'] > tensaoMedia).sum()
+# Print the result
+print(f"Tensões acima da média: {tensoesAcimaDaMedia}")
+#%
+bancoDB['V'] = bancoDB['V'].apply(lambda x: tensaoMedia if x > tensaoMedia else x)
+#%%
+print(bancoDB.describe())
 #%%
 print(bancoDB.isna().sum())
 #%%
@@ -52,7 +72,7 @@ optmizer = Adam(learning_rate=0.001)
 motorccRNA.compile(optimizer = optmizer, loss='mean_squared_error',metrics=['mean_absolute_error'])
 #%%
 #Treinar
-motorccRNA.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
+motorccRNA.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_test, y_test))
 #%%
 print(saida.mean())
 
