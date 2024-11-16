@@ -14,17 +14,22 @@ print(bancoDB.describe())
 tensaoMedia = bancoDB['V'].mean()
 print(tensaoMedia)
 #%%
-def graficoTorquexTensao():
+def graficoVariabelxTensao(x):
     import matplotlib.pyplot as plt
     import seaborn as sns 
-    sns.scatterplot(x='T',y='V',data = bancoDB,color='blue',marker='o')
-    plt.xlabel('Torque', fontsize=14)
-    plt.ylabel('Tensão', fontsize=14)
-    plt.title('Gráfico Torque x Tensão', fontsize=14)
+    sns.scatterplot(x = x,y ='V',data = bancoDB,color='blue',marker='o')
+    match x:
+        case 'T':
+            eixoX ='Torque'
+        case 'i':
+           eixoX = 'Corrente'    
+    plt.xlabel('V', fontsize=14)
+    plt.ylabel(x, fontsize=14)
+    plt.title('Gráfico '+ str(eixoX) + 'Tensão', fontsize=14)
     plt.grid(True)
     plt.show()
 #%%
-graficoTorquexTensao()
+graficoVariabelxTensao('T')
 #%%
 tensoesZero = (bancoDB['V'] == 0).sum()
 print(tensoesZero)
@@ -32,7 +37,7 @@ print(tensoesZero)
 print(bancoDB.shape)
 #%%
 bancoDB = bancoDB[bancoDB['V'] != 0]
-graficoTorquexTensao()
+graficoVariabelxTensao('T')
 #%%
 tensoesAcimaDaMedia = (bancoDB['V'] > tensaoMedia).sum()
 # Print the result
@@ -43,6 +48,14 @@ bancoDB['V'] = bancoDB['V'].apply(lambda x: tensaoMedia if x > tensaoMedia else 
 print(bancoDB.describe())
 #%%
 print(bancoDB.isna().sum())
+#%%
+graficoVariabelxTensao('i')
+#%%
+correntesNegativas = (bancoDB['i'] < 0).sum()
+print(correntesNegativas)
+#%%
+bancoDB['i'] = bancoDB['i'].apply(lambda x: 0 if x < 0 else x )
+graficoVariabelxTensao('i')
 #%%
 #Separando entradas e saída
 entradas = bancoDB[['T','w','i']].values
@@ -73,10 +86,6 @@ motorccRNA.add(Dense(64, input_dim=3, activation='relu'))
 motorccRNA.add(Dense(32, activation='relu'))
 motorccRNA.add(Dense(1, activation='linear'))
 
-#%%#Compilar o modelo
-from keras.optimizers import Adam
-optmizer = Adam(learning_rate=0.001)
-motorccRNA.compile(optimizer = optmizer, loss='mean_squared_error',metrics=['mean_absolute_error'])
 #%%
 #Compilar o modelo
 from keras.optimizers import Adam
@@ -86,17 +95,15 @@ motorccRNA.compile(optimizer = optmizer, loss='mean_squared_error',metrics=['mea
 #Treinar
 motorccRNA.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_test, y_test))
 #%%
-print('Media %f' % saida.mean())
+print('Tensão Media %f' % saida.mean(),end=' ')
 
 #%%
 previsao = motorccRNA.predict(X_test)
 
 #%%
-
 from sklearn.metrics import mean_absolute_error
 mae = mean_absolute_error(y_test, previsao)
-print('MAE %f' % mae)
-
+print('MAE %f' % mae, end=' ')
 #%%
 from scipy import signal
 import numpy as np
