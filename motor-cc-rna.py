@@ -14,6 +14,9 @@ print(bancoDB.describe())
 tensaoMedia = bancoDB['V'].mean()
 print(tensaoMedia)
 #%%
+#%%
+print(bancoDB.isna().sum())
+#%%
 def graficoVariabelxTensao(x):
     import matplotlib.pyplot as plt
     import seaborn as sns 
@@ -47,14 +50,19 @@ bancoDB['V'] = bancoDB['V'].apply(lambda x: tensaoMedia if x > tensaoMedia else 
 #%%
 print(bancoDB.describe())
 #%%
-print(bancoDB.isna().sum())
-#%%
 graficoVariabelxTensao('i')
 #%%
-correntesNegativas = (bancoDB['i'] < 0).sum()
-print(correntesNegativas)
+correntesNegativasNulas = (bancoDB['i'] <= 0).sum()
+print(correntesNegativasNulas)
 #%%
-bancoDB['i'] = bancoDB['i'].apply(lambda x: 0 if x < 0 else x )
+correnteMedia = bancoDB['i'].mean()
+print(correnteMedia)
+#%%
+bancoDB['i'] = bancoDB['i'].apply(lambda x: correnteMedia if x <= 0 else x )
+graficoVariabelxTensao('i')
+#%%
+print( (bancoDB['i'] <= 0).sum())
+#%%
 graficoVariabelxTensao('i')
 #%%
 #Separando entradas e saída
