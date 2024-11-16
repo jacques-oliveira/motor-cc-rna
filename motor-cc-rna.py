@@ -14,13 +14,25 @@ print(bancoDB.describe())
 tensaoMedia = bancoDB['V'].mean()
 print(tensaoMedia)
 #%%
-import matplotlib.pyplot as plt
-import seaborn as sns 
-sns.scatterplot(x='T',y='V',data = bancoDB,color='blue',marker='o')
-plt.xlabel('Torque', fontsize=14)
-plt.ylabel('Tensão', fontsize=14)
-plt.title('Gráfico Torque x Tensão', fontsize=14)
-plt.show()
+def graficoTorquexTensao():
+    import matplotlib.pyplot as plt
+    import seaborn as sns 
+    sns.scatterplot(x='T',y='V',data = bancoDB,color='blue',marker='o')
+    plt.xlabel('Torque', fontsize=14)
+    plt.ylabel('Tensão', fontsize=14)
+    plt.title('Gráfico Torque x Tensão', fontsize=14)
+    plt.grid(True)
+    plt.show()
+#%%
+graficoTorquexTensao()
+#%%
+tensoesZero = (bancoDB['V'] == 0).sum()
+print(tensoesZero)
+#%%
+print(bancoDB.shape)
+#%%
+bancoDB = bancoDB[bancoDB['V'] != 0]
+graficoTorquexTensao()
 #%%
 tensoesAcimaDaMedia = (bancoDB['V'] > tensaoMedia).sum()
 # Print the result
@@ -74,7 +86,7 @@ motorccRNA.compile(optimizer = optmizer, loss='mean_squared_error',metrics=['mea
 #Treinar
 motorccRNA.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_test, y_test))
 #%%
-print(saida.mean())
+print('Media %f' % saida.mean())
 
 #%%
 previsao = motorccRNA.predict(X_test)
@@ -83,7 +95,7 @@ previsao = motorccRNA.predict(X_test)
 
 from sklearn.metrics import mean_absolute_error
 mae = mean_absolute_error(y_test, previsao)
-print(mae)
+print('MAE %f' % mae)
 
 #%%
 from scipy import signal
