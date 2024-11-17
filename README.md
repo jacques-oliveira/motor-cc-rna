@@ -16,7 +16,7 @@
 - Coluna 3 – “i” = Corrente de Entrada
 - Coluna 4 – “V” = Tensão que o Controle Fuzzy indicou como saída
 
-# MAE
+## MAE
   Resultado de um MAE = 0.424380 
   
 ## Exemplos de Controle
